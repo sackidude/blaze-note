@@ -1,3 +1,8 @@
+//! # Error module
+//!
+//! This is the publicly facing API error. It represents all the ways parsing
+//! of the custom markdown can fail.
+
 use core::fmt;
 
 pub type Result<T> = std::result::Result<T, Error>;
