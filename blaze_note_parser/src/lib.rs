@@ -7,6 +7,7 @@
 
 pub mod error;
 pub mod flashcard;
+mod parser;
 
 use error::Result;
 use flashcard::Flashcard;
@@ -35,7 +36,7 @@ use flashcard::Flashcard;
 /// Check out `testing` directory for more examples
 pub fn parse(document: &str) -> Result<Note> {
     let html = markdown::to_html(document);
-    let cards = vec![];
+    let cards = parser::parse_to_cards(document)?;
     let note = Note { html, cards };
 
     Ok(note)
