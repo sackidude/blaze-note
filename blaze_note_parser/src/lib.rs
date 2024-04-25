@@ -31,6 +31,8 @@ use flashcard::Flashcard;
 ///     Ok(())
 /// }
 /// ```
+///
+/// Check out `testing` directory for more examples
 pub fn parse(document: &str) -> Result<Note> {
     let html = markdown::to_html(document);
     let cards = vec![];
