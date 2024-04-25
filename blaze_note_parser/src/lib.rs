@@ -6,8 +6,10 @@
 //!
 
 pub mod error;
+pub mod flashcard;
 
 use error::Result;
+use flashcard::Flashcard;
 
 /// Parse a document into a `Note`
 ///
@@ -40,13 +42,6 @@ pub fn parse(document: &str) -> Result<Note> {
 pub struct Note {
     html: String,
     cards: Vec<Flashcard>,
-}
-
-pub enum Flashcard {
-    FrontBack,
-    Reveal,
-    UnorderedList,
-    OrderedList,
 }
 
 impl Note {
