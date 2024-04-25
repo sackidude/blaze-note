@@ -50,3 +50,7 @@ before ||and|| after of the promp}}
 
 3. ordered items}}
 ```
+
+## Info about this library
+
+This library uses `#[forbid(unsafe_code)]`.
