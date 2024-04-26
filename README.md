@@ -1,8 +1,7 @@
 # Blaze note
 
-Note taking and flashcard genertion using a _minimal_ superset of markdow. So feel 
-free to use all of the markdown magic you love and automatic card prompt 
-generation.
+Note taking and flashcard genertion using a _minimal_ superset of markdow. All of the markdown magic you love combined with automatic card prompt 
+generation for optimal learning from your notes.
 
 This repository contains blaze_note_parser which is the light and fast note 
 parser which can be implemented into any service you wanna use it in. **If you 
