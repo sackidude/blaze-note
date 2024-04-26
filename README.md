@@ -20,6 +20,7 @@ _Very_ basic usage could look something like this:
 ```rust
 use blaze_note_parser::parse;
 use std::error::Error;
+
 fn main() -> Result<(), Box<dyn Error>> {
     let note = parse("# {Hello,| _World_!}")?;
     Ok(())
