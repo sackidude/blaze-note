@@ -1,6 +1,6 @@
 # Blaze note
 
-Note taking and flashcard genertion using _minimal_ superset markdow. So feel 
+Note taking and flashcard genertion using a _minimal_ superset of markdow. So feel 
 free to use all of the markdown magic you love and automatic card prompt 
 generation.
 
