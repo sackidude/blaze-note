@@ -12,6 +12,7 @@ pub enum Error {
     UnclosedBrackets,
     EmptyCard,
     NoOpeningBrackets,
+    MalformedBars,
 }
 
 impl fmt::Display for Error {
@@ -25,6 +26,10 @@ impl fmt::Display for Error {
             Error::NoOpeningBrackets => write!(
                 f,
                 "got closing brackets `}}` before any opening brackets `{{`"
+            ),
+            Error::MalformedBars => write!(
+                f,
+                "Malformed bars `|` somewhere, could be a quadruple bar `||||`"
             ),
         }
     }

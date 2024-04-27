@@ -83,11 +83,18 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
                                 document[indices[0] + 1..indices[1] - 1].to_string(),
                                 document[indices[1]..i - 1].to_string(),
                             )),
-                            FT::Reveal => FC::Reveal(Reveal::new(
-                                document[indices[0] + 1..indices[1] - 1].to_string(),
-                                document[indices[1] + 1..indices[2] - 1].to_string(),
-                                document[indices[2] + 1..i - 1].to_string(),
-                            )),
+                            FT::Reveal => {
+                                if indices[2] - 2 < indices[1] {
+                                    // This represents a |||| case for this,
+                                    // which is considered malformed input.
+                                    return Err(error::Error::MalformedBars);
+                                }
+                                FC::Reveal(Reveal::new(
+                                    document[indices[0] + 1..indices[1] - 1].to_string(),
+                                    document[indices[1] + 1..indices[2] - 1].to_string(),
+                                    document[indices[2] + 1..i - 1].to_string(),
+                                ))
+                            }
                             FT::OrderedList => {
                                 indices.push(i);
                                 let entries = indices

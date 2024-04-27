@@ -124,17 +124,10 @@ fn only_bar_front_back_card() {
 
 #[test]
 fn only_bar_reveal_card() {
-    let cards = parse_flashcards("{{||||}}").expect("failed to parse");
-    let card = &cards[0];
-
-    if let Flashcard::Reveal(card) = card {
-        assert_eq!(card.before(), "");
-        assert_eq!(card.reveal(), "");
-        assert_eq!(card.after(), "");
+    let err = parse_flashcards("{{||||}}").expect_err("no error");
+    if let error::Error::MalformedBars = err {
+        ()
     } else {
-        panic!(
-            "Incorrect flashcard type. Expect FrontBack, got: {:?}",
-            card
-        );
+        panic!("expected error: MalformedBars, got error: {}", err);
     }
 }
