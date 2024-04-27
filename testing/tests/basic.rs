@@ -1,5 +1,3 @@
-use std::str::CharIndices;
-
 use blaze_note_parser::{flashcard::Flashcard, parse_flashcards};
 
 #[test]
@@ -24,8 +22,24 @@ fn basic_reveal_parsing() {
     let card = &flashcards[0];
     if let Flashcard::Reveal(card) = card {
         assert_eq!(card.before(), "a");
-        assert_eq!(card.reveal(), "a");
-        assert_eq!(card.after(), "a");
+        assert_eq!(card.reveal(), "b");
+        assert_eq!(card.after(), "c");
+    } else {
+        panic!("incorrect card type");
+    }
+}
+
+#[test]
+fn basic_list_parsing() {
+    let note_str = String::from("{{a|>1.b2.c}}");
+    let flashcards = parse_flashcards(&note_str).expect("failed to parse document");
+    assert_eq!(flashcards.len(), 1);
+    let card = &flashcards[0];
+    if let Flashcard::OrderedList(card) = card {
+        assert_eq!(card.question(), "a");
+        let entries = card.entries();
+        assert_eq!(entries[0], "b");
+        assert_eq!(entries[1], "c");
     } else {
         panic!("incorrect card type");
     }

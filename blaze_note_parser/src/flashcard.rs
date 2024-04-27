@@ -56,6 +56,14 @@ impl List {
     pub fn new(question: String, entries: Vec<String>) -> Self {
         List { question, entries }
     }
+
+    pub fn question(&self) -> &str {
+        &self.question
+    }
+
+    pub fn entries(&self) -> &[String] {
+        &self.entries
+    }
 }
 
 #[derive(Debug)]

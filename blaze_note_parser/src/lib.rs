@@ -83,14 +83,24 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
                                 document[indices[1]..i - 1].to_string(),
                             )),
                             FT::Reveal => FC::Reveal(Reveal::new(
-                                document[indices[0]..indices[1]].to_string(),
-                                document[indices[1]..indices[2]].to_string(),
-                                document[indices[2]..indices[3]].to_string(),
+                                document[indices[0] + 1..indices[1] - 1].to_string(),
+                                document[indices[1] + 1..indices[2] - 1].to_string(),
+                                document[indices[2] + 1..i - 1].to_string(),
                             )),
-                            FT::OrderedList => FC::OrderedList(List::new(
-                                document[indices[0]..indices[1]].to_string(),
-                                vec![document[indices[0]..indices[1]].to_string()],
-                            )),
+                            FT::OrderedList => {
+                                indices.push(i);
+                                let entries = indices
+                                    .iter()
+                                    .skip(2)
+                                    .zip(indices.iter().skip(3))
+                                    .map(|(&a, &b)| document[a + 1..b - 1].to_string())
+                                    .collect();
+
+                                FC::OrderedList(List::new(
+                                    document[indices[0] + 1..indices[1] - 1].to_string(),
+                                    entries,
+                                ))
+                            }
                         };
 
                         cards.push(card);
@@ -105,17 +115,30 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
             ('|', '>') => {
                 if building {
                     card_type = Some(FT::OrderedList);
+                    indices.push(i);
                 }
             }
             ('|', '|') => {
                 if building {
-                    card_type = Some(FT::OrderedList);
+                    indices.push(i);
+                    if card_type.is_none() {
+                        card_type = Some(FT::Reveal);
+                    }
                 }
             }
             ('|', _) => {
-                if building {
+                if building && card_type.is_none() {
                     card_type = Some(FT::FrontBack);
-                    indices.push(i) // Ignore the `|`
+                    indices.push(i); // Ignore the `|`
+                }
+            }
+            ('1'..='9', '.') => {
+                if building {
+                    if let Some(ref card_type) = card_type {
+                        if let FT::OrderedList = card_type {
+                            indices.push(i);
+                        }
+                    }
                 }
             }
             _ => (),
