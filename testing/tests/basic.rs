@@ -1,7 +1,4 @@
-use blaze_note_parser::{
-    flashcard::{Flashcard, FrontBack},
-    parse_flashcards,
-};
+use blaze_note_parser::{flashcard::Flashcard, parse_flashcards};
 
 #[test]
 fn basic_card_parsing() {
