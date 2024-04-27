@@ -1,7 +1,7 @@
 use blaze_note_parser::{flashcard::Flashcard, parse_flashcards};
 
 #[test]
-fn basic_front_back_card_parsing() {
+fn front_back() {
     let note_str = String::from("{{a|b}}");
     let flashcards = parse_flashcards(&note_str).expect("failed to parse document");
     assert_eq!(flashcards.len(), 1);
@@ -15,7 +15,7 @@ fn basic_front_back_card_parsing() {
 }
 
 #[test]
-fn basic_reveal_parsing() {
+fn reveal() {
     let note_str = String::from("{{a||b||c}}");
     let flashcards = parse_flashcards(&note_str).expect("failed to parse document");
     assert_eq!(flashcards.len(), 1);
@@ -30,7 +30,7 @@ fn basic_reveal_parsing() {
 }
 
 #[test]
-fn basic_list_parsing() {
+fn list() {
     let note_str = String::from("{{a|>1.b2.c}}");
     let flashcards = parse_flashcards(&note_str).expect("failed to parse document");
     assert_eq!(flashcards.len(), 1);
