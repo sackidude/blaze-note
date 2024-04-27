@@ -24,7 +24,9 @@ pub mod error;
 pub mod flashcard;
 
 use error::Result;
-use flashcard::{Flashcard, FlashcardBuilder};
+use flashcard::{Flashcard, FlashcardBuilder, FlashcardTypes};
+
+use crate::flashcard::{FrontBack, List, Reveal};
 
 /// parses and returns all of the flashcards in a document.
 ///
@@ -59,37 +61,61 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
     // very nice match statement but w.e. this works.
     let mut last_char = '\0';
     let mut building = false;
-    let mut builder = &mut FlashcardBuilder::new();
+    let mut card_type: Option<FlashcardTypes> = None;
+    let mut indices: Vec<usize> = vec![];
     for (i, c) in document.chars().enumerate() {
         use flashcard::FlashcardTypes as FT;
         match (last_char, c) {
             ('{', '{') => {
                 if !building {
-                    builder = builder.push_index(i);
+                    indices.push(i); // Don't include the `{`
                     building = true;
                 }
             }
             ('}', '}') => {
                 if building {
-                    let card = builder.build()?;
-                    cards.push(card);
+                    // Construct the card
+                    if let Some(ref card_type) = card_type {
+                        use flashcard::Flashcard as FC;
+                        let card: Flashcard = match card_type {
+                            FT::FrontBack => FC::FrontBack(FrontBack::new(
+                                document[indices[0] + 1..indices[1] - 1].to_string(),
+                                document[indices[1]..i - 1].to_string(),
+                            )),
+                            FT::Reveal => FC::Reveal(Reveal::new(
+                                document[indices[0]..indices[1]].to_string(),
+                                document[indices[1]..indices[2]].to_string(),
+                                document[indices[2]..indices[3]].to_string(),
+                            )),
+                            FT::OrderedList => FC::OrderedList(List::new(
+                                document[indices[0]..indices[1]].to_string(),
+                                vec![document[indices[0]..indices[1]].to_string()],
+                            )),
+                        };
+
+                        cards.push(card);
+                    } else {
+                        return Err(error::Error::EmptyCard);
+                    }
+                    building = false;
                 } else {
                     // CONSIDER!: Could return error here
                 }
             }
             ('|', '>') => {
                 if building {
-                    builder.card_type(FT::OrderedList);
+                    card_type = Some(FT::OrderedList);
                 }
             }
             ('|', '|') => {
                 if building {
-                    builder.card_type(FT::Reveal);
+                    card_type = Some(FT::OrderedList);
                 }
             }
             ('|', _) => {
                 if building {
-                    builder.card_type(FT::FrontBack);
+                    card_type = Some(FT::FrontBack);
+                    indices.push(i) // Ignore the `|`
                 }
             }
             _ => (),
