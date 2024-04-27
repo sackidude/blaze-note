@@ -58,26 +58,38 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
     // I don't love this solution, would like to have a sliding windows and one
     // very nice match statement but w.e. this works.
     let mut last_char = '\0';
-    let mut card_builder: Option<FlashcardBuilder> = None;
-    for c in document.chars() {
+    let mut building = false;
+    let mut builder = &mut FlashcardBuilder::new();
+    for (i, c) in document.chars().enumerate() {
+        use flashcard::FlashcardTypes as FT;
         match (last_char, c) {
             ('{', '{') => {
-                if card_builder.is_none() {
-                    card_builder = Some(FlashcardBuilder::new());
+                if !building {
+                    builder = builder.push_index(i);
+                    building = true;
                 }
             }
             ('}', '}') => {
-                if let Some(card_builder) = card_builder {
-                    let card = card_builder.build();
-
-                    cards.push(card?);
+                if building {
+                    let card = builder.build()?;
+                    cards.push(card);
                 } else {
                     // CONSIDER!: Could return error here
                 }
             }
-            (_, '|') => {
-                if let Some(card_builder) = card_builder {
-                    card_builder.card_type(flashcard::FlashcardTypes::FrontBack);
+            ('|', '>') => {
+                if building {
+                    builder.card_type(FT::OrderedList);
+                }
+            }
+            ('|', '|') => {
+                if building {
+                    builder.card_type(FT::Reveal);
+                }
+            }
+            ('|', _) => {
+                if building {
+                    builder.card_type(FT::FrontBack);
                 }
             }
             _ => (),
