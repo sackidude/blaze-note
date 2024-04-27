@@ -70,10 +70,16 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
                 if let Some(card_builder) = card_builder {
                     let card = card_builder.build();
 
-                    cards.push(card);
+                    cards.push(card?);
+                } else {
+                    // CONSIDER!: Could return error here
                 }
             }
-            (_, '|') => todo!(),
+            (_, '|') => {
+                if let Some(card_builder) = card_builder {
+                    card_builder.card_type(flashcard::FlashcardTypes::FrontBack);
+                }
+            }
             _ => (),
         }
         last_char = c;
