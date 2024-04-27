@@ -24,7 +24,7 @@ pub mod error;
 pub mod flashcard;
 
 use error::Result;
-use flashcard::{Flashcard, FlashcardBuilder, FlashcardTypes};
+use flashcard::{Flashcard, FlashcardTypes};
 
 use crate::flashcard::{FrontBack, List, Reveal};
 
