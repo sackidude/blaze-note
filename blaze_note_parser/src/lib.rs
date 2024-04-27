@@ -99,7 +99,7 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
                     }
                     building = false;
                 } else {
-                    // CONSIDER!: Could return error here
+                    return Err(error::Error::NoOpeningBrackets);
                 }
             }
             ('|', '>') => {
