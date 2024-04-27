@@ -75,9 +75,9 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
             ('}', '}') => {
                 if building {
                     // Construct the card
-                    if let Some(ref card_type) = card_type {
+                    if let Some(ref some_card_type) = card_type {
                         use flashcard::Flashcard as FC;
-                        let card: Flashcard = match card_type {
+                        let card: Flashcard = match some_card_type {
                             FT::FrontBack => FC::FrontBack(FrontBack::new(
                                 document[indices[0] + 1..indices[1] - 1].to_string(),
                                 document[indices[1]..i - 1].to_string(),
@@ -104,6 +104,8 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
                         };
 
                         cards.push(card);
+                        indices = vec![];
+                        card_type = None;
                     } else {
                         return Err(error::Error::EmptyCard);
                     }

@@ -41,3 +41,39 @@ fn list() {
         panic!("incorrect card type");
     }
 }
+
+#[test]
+fn all_in_one() {
+    let flashcards =
+        parse_flashcards("{{a|b}}{{c||d||e}}{{f|>1.g2.h}}").expect("failed to parse document");
+    assert_eq!(flashcards.len(), 3);
+
+    println!("{:?}", flashcards);
+
+    let card = &flashcards[0];
+    if let Flashcard::FrontBack(card) = card {
+        assert_eq!(card.front(), "a");
+        assert_eq!(card.back(), "b");
+    } else {
+        panic!("incorrect card type");
+    }
+
+    let card = &flashcards[1];
+    if let Flashcard::Reveal(card) = card {
+        assert_eq!(card.before(), "c");
+        assert_eq!(card.reveal(), "d");
+        assert_eq!(card.after(), "e");
+    } else {
+        panic!("incorrect card type");
+    }
+
+    let card = &flashcards[2];
+    if let Flashcard::OrderedList(card) = card {
+        assert_eq!(card.question(), "f");
+        let entries = card.entries();
+        assert_eq!(entries[0], "g");
+        assert_eq!(entries[1], "h");
+    } else {
+        panic!("incorrect card type");
+    }
+}
