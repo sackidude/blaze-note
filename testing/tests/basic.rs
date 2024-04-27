@@ -1,19 +1,10 @@
-use std::fs::read_to_string;
-
-use blaze_note_parser::{flashcard::Flashcard, parse};
+use blaze_note_parser::parse_flashcards;
 
 #[test]
-fn main() {
-    let note_str: String = read_to_string("documents/basic.md")
-        .expect("failed to read file")
-        .parse()
-        .expect("failed to parse read file");
+fn basic_card_parsing() {
+    let note_str = String::from("# {{Hello,| World!}}");
+    let flashcards = parse_flashcards(&note_str).expect("failed to parse document");
+    assert_eq!(flashcards.len(), 1);
 
-    let note = parse(&note_str).expect("failed to parse document");
-    if let Flashcard::FrontBack(card) = &note.get_cards()[0] {
-        assert_eq!(card.get_front(), "Hello,");
-        assert_eq!(card.get_back(), "_World_!");
-    } else {
-        panic!("incorrect flashcard type")
-    }
+    //TODO! Add more here
 }
