@@ -17,29 +17,17 @@ pub struct List {
     entries: Vec<String>,
 }
 
-impl FrontBack {
-    pub fn get_front(&self) -> &str {
-        &self.front
-    }
-    pub fn get_back(&self) -> &str {
-        &self.back
-    }
-}
+pub(crate) struct FlashcardBuilder {}
 
-impl Reveal {
-    pub fn get_wrapper(&self) -> &str {
-        &self.wrapper
+impl FlashcardBuilder {
+    pub fn new() -> Self {
+        FlashcardBuilder {}
     }
-    pub fn get_reveal(&self) -> &str {
-        &self.reveal
-    }
-}
 
-impl List {
-    pub fn get_question(&self) -> &str {
-        &self.question
-    }
-    pub fn get_reveal(&self) -> &[String] {
-        &self.entries
+    pub fn build(self) -> Flashcard {
+        Flashcard::FrontBack(FrontBack {
+            front: "hello".into(),
+            back: "world".into(),
+        })
     }
 }

@@ -4,55 +4,90 @@
 //! This is a suite of services for note taking and semi-automatic flashcard
 //! genertion using markdown and some custom syntax.
 //!
+//! ## Example
+//!
+//! ```
+//! use blaze_note_parser::{parse_flashcards, compile_to_html};
+//! use std::error::Error;
+//! fn main() -> Result<(), Box<dyn Error>> {
+//!     let document = String::from("# Hello, _World_!");
+//!     let flashcards = parse_flashcards(&document)?;
+//!     let html = compile_to_html(document)?;
+//!     
+//!     Ok(())
+//! }
+//! ```
+//!
+//! Check out `testing` directory for more examples
 
 pub mod error;
 pub mod flashcard;
-mod parser;
 
 use error::Result;
-use flashcard::Flashcard;
+use flashcard::{Flashcard, FlashcardBuilder};
 
-/// Parse a document into a `Note`
+/// parses and returns all of the flashcards in a document.
 ///
-/// The base of the whole library used in other helper functions.
+/// This accepts a string-slice which means it should be run before and eventual
+///  `compile_to_html` or `compile_to_markdown`.
 ///
-/// ## Errors
-///
-/// Can error when the _note_ syntax is invalid. Can't error due to markdown
-/// because it can't error.
-///
-/// ## Examples
+/// ## Example
 ///
 /// ```
-/// use blaze_note_parser::parse;
+/// use blaze_note_parser::parse_flashcards;
 /// use std::error::Error;
-///
 /// fn main() -> Result<(), Box<dyn Error>> {
-///     let note = parse("# Hello, _World_!")?;
+///     let document = String::from("# Hello, _World_!");
+///     let flashcards = parse_flashcards(&document)?;
+///
+///     
 ///     Ok(())
 /// }
 /// ```
 ///
-/// Check out `testing` directory for more examples
-pub fn parse(document: &str) -> Result<Note> {
-    let html = markdown::to_html(document);
-    let cards = parser::parse_to_cards(document)?;
-    let note = Note { html, cards };
+/// ## Errors
+///
+/// This returns an error when the document isn't conforming to the syntax of
+/// blaze-note, the function fails in the following scenarios:
+///
+/// 1. Opened but never closed double brackets `{{`
+///
+pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
+    let mut cards: Vec<Flashcard> = vec![];
 
-    Ok(note)
-}
-
-pub struct Note {
-    html: String,
-    cards: Vec<Flashcard>,
-}
-
-impl Note {
-    pub fn get_html(&self) -> &str {
-        &self.html
+    // I don't love this solution, would like to have a sliding windows and one
+    // very nice match statement but w.e. this works.
+    let mut last_char = '\0';
+    let mut card: Option<FlashcardBuilder> = None;
+    for c in document.chars() {
+        match c {
+            '{' => {
+                if card.is_none() && last_char == '{' {
+                    card = Some(FlashcardBuilder::new());
+                }
+            }
+            '}' => {
+                if last_char == '}' {
+                    if let Some(card) = card {
+                        cards.push(card.build())
+                    }
+                }
+            }
+            '|' => todo!(),
+            _ => (),
+        }
+        last_char = c;
     }
 
-    pub fn get_cards(&self) -> &[Flashcard] {
-        &self.cards
-    }
+    Ok(cards)
+}
+
+pub fn compile_to_html(document: String) -> Result<String> {
+    let compiled_markdown = compile_to_markdown(document)?;
+
+    Ok(markdown::to_html(&compiled_markdown))
+}
+
+pub fn compile_to_markdown(document: String) -> Result<String> {
+    Ok("poop".into())
 }

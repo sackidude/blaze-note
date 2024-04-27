@@ -9,13 +9,13 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    InvalidNoteSyntax,
+    UnclosedBrackets,
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Error::InvalidNoteSyntax => write!(f, "invalid note syntax"),
+            Error::UnclosedBrackets => write!(f, "unclosed brackets at end of document"),
         }
     }
 }
