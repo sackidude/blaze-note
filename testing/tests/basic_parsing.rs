@@ -1,4 +1,4 @@
-use blaze_note_parser::{flashcard::Flashcard, parse_flashcards};
+use blaze_note_parser::{error, flashcard::Flashcard, parse_flashcards};
 
 #[test]
 fn front_back() {
@@ -75,5 +75,68 @@ fn all_in_one() {
         assert_eq!(entries[1], "h");
     } else {
         panic!("incorrect card type");
+    }
+}
+
+#[test]
+fn err_empty_card() {
+    let err = parse_flashcards("{{}}").expect_err("didn't get error");
+    if let error::Error::EmptyCard = err {
+        ()
+    } else {
+        panic!("expected error: EmptyCard. Got error: {}", err);
+    }
+}
+
+#[test]
+fn err_unclosed_brackets() {
+    let err = parse_flashcards("{{").expect_err("didn't get error");
+    if let error::Error::UnclosedBrackets = err {
+        ()
+    } else {
+        panic!("expected error: UnclosedBrackets. Got error: {}", err);
+    }
+}
+
+#[test]
+fn no_opening_brackets() {
+    let err = parse_flashcards("}}").expect_err("didn't get error");
+    if let error::Error::NoOpeningBrackets = err {
+        ()
+    } else {
+        panic!("expected error: NoOpeningBrackets. Got error: {}", err);
+    }
+}
+
+#[test]
+fn only_bar_front_back_card() {
+    let cards = parse_flashcards("{{|}}").expect("failed to parse");
+    let card = &cards[0];
+
+    if let Flashcard::FrontBack(card) = card {
+        assert_eq!(card.front(), "");
+        assert_eq!(card.back(), "");
+    } else {
+        panic!(
+            "Incorrect flashcard type. Expect FrontBack, got: {:?}",
+            card
+        );
+    }
+}
+
+#[test]
+fn only_bar_reveal_card() {
+    let cards = parse_flashcards("{{||||}}").expect("failed to parse");
+    let card = &cards[0];
+
+    if let Flashcard::Reveal(card) = card {
+        assert_eq!(card.before(), "");
+        assert_eq!(card.reveal(), "");
+        assert_eq!(card.after(), "");
+    } else {
+        panic!(
+            "Incorrect flashcard type. Expect FrontBack, got: {:?}",
+            card
+        );
     }
 }
