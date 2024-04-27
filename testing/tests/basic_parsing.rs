@@ -48,8 +48,6 @@ fn all_in_one() {
         parse_flashcards("{{a|b}}{{c||d||e}}{{f|>1.g2.h}}").expect("failed to parse document");
     assert_eq!(flashcards.len(), 3);
 
-    println!("{:?}", flashcards);
-
     let card = &flashcards[0];
     if let Flashcard::FrontBack(card) = card {
         assert_eq!(card.front(), "a");
