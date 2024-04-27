@@ -63,6 +63,7 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
     let mut building = false;
     let mut card_type: Option<FlashcardTypes> = None;
     let mut indices: Vec<usize> = vec![];
+    let len = document.len();
     for (i, c) in document.chars().enumerate() {
         use flashcard::FlashcardTypes as FT;
         match (last_char, c) {
@@ -146,6 +147,9 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
             _ => (),
         }
         last_char = c;
+        if i == len - 1 && building == true {
+            return Err(error::Error::UnclosedBrackets);
+        }
     }
 
     Ok(cards)
