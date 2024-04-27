@@ -2,8 +2,7 @@ use blaze_note_parser::{flashcard::Flashcard, parse_flashcards};
 
 #[test]
 fn front_back() {
-    let note_str = String::from("{{a|b}}");
-    let flashcards = parse_flashcards(&note_str).expect("failed to parse document");
+    let flashcards = parse_flashcards("{{a|b}}").expect("failed to parse document");
     assert_eq!(flashcards.len(), 1);
     let card = &flashcards[0];
     if let Flashcard::FrontBack(card) = card {
@@ -16,8 +15,7 @@ fn front_back() {
 
 #[test]
 fn reveal() {
-    let note_str = String::from("{{a||b||c}}");
-    let flashcards = parse_flashcards(&note_str).expect("failed to parse document");
+    let flashcards = parse_flashcards("{{a||b||c}}").expect("failed to parse document");
     assert_eq!(flashcards.len(), 1);
     let card = &flashcards[0];
     if let Flashcard::Reveal(card) = card {
@@ -31,8 +29,7 @@ fn reveal() {
 
 #[test]
 fn list() {
-    let note_str = String::from("{{a|>1.b2.c}}");
-    let flashcards = parse_flashcards(&note_str).expect("failed to parse document");
+    let flashcards = parse_flashcards("{{a|>1.b2.c}}").expect("failed to parse document");
     assert_eq!(flashcards.len(), 1);
     let card = &flashcards[0];
     if let Flashcard::OrderedList(card) = card {
