@@ -131,3 +131,17 @@ fn only_bar_reveal_card() {
         panic!("expected error: MalformedBars, got error: {}", err);
     }
 }
+
+#[test]
+fn more_bars() {
+    let cards = parse_flashcards("{{a||b|c||d}}").expect("failed to parse");
+    let card = &cards[0];
+    match card {
+        Flashcard::Reveal(card) => {
+            assert_eq!(card.before(), "a");
+            assert_eq!(card.reveal(), "b|c");
+            assert_eq!(card.after(), "d");
+        }
+        _ => panic!("Expected flashcard type Reveal got: {:?}", card),
+    }
+}
