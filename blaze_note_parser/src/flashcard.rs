@@ -10,6 +10,9 @@ pub struct FrontBack {
 }
 
 impl FrontBack {
+    pub fn new(front: String, back: String) -> Self {
+        FrontBack { front, back }
+    }
     pub fn front(&self) -> &str {
         &self.front
     }
@@ -18,20 +21,41 @@ impl FrontBack {
     }
 }
 pub struct Reveal {
-    wrapper: String,
+    before: String,
     reveal: String,
+    after: String,
+}
+
+impl Reveal {
+    pub fn new(before: String, reveal: String, after: String) -> Self {
+        Reveal {
+            before,
+            reveal,
+            after,
+        }
+    }
+
+    pub fn before(&self) -> &str {
+        &self.before
+    }
+
+    pub fn reveal(&self) -> &str {
+        &self.reveal
+    }
+
+    pub fn after(&self) -> &str {
+        &self.after
+    }
 }
 pub struct List {
     question: String,
     entries: Vec<String>,
 }
 
-// I don't love derive Clone and Copy, but removing it leads to a big fight with
-// the borrow checker that I don't feel like doing right now
-#[derive(Debug)]
-pub(crate) struct FlashcardBuilder {
-    card_type: Option<FlashcardTypes>,
-    indexs: Vec<usize>,
+impl List {
+    pub fn new(question: String, entries: Vec<String>) -> Self {
+        List { question, entries }
+    }
 }
 
 #[derive(Debug)]
@@ -39,42 +63,4 @@ pub(crate) enum FlashcardTypes {
     FrontBack,
     Reveal,
     OrderedList,
-}
-
-impl FlashcardBuilder {
-    pub fn new() -> Self {
-        FlashcardBuilder {
-            card_type: None,
-            indexs: vec![],
-        }
-    }
-
-    pub fn build(&mut self) -> crate::error::Result<Flashcard> {
-        if let Some(card_type) = &self.card_type {
-            return Ok(match card_type {
-                FlashcardTypes::FrontBack => Flashcard::FrontBack(FrontBack {
-                    front: "Hello".into(),
-                    back: "World".into(),
-                }),
-                FlashcardTypes::Reveal => Flashcard::Reveal(Reveal {
-                    wrapper: "Hello".into(),
-                    reveal: "World".into(),
-                }),
-                FlashcardTypes::OrderedList => Flashcard::OrderedList(List {
-                    question: "Hello".into(),
-                    entries: vec!["World".into()],
-                }),
-            });
-        }
-        Err(crate::error::Error::EmptyCard)
-    }
-
-    pub fn card_type(&mut self, card_type: FlashcardTypes) {
-        self.card_type = Some(card_type);
-    }
-
-    pub fn push_index(&mut self, index: usize) -> &mut Self {
-        self.indexs.push(index);
-        self
-    }
 }
