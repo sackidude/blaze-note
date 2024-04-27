@@ -29,18 +29,53 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Syntax
 
-**Front-back card**
+### Front-back card
 ```md
 {{front of card | back of card}}
 ```
 
-**Reveal card**
-```md
-{{A reveal card is slightly more complicated but can have text 
-before ||and|| after of the promp}}
+**Compiles to**:
+
+```html
+<div class="card front-back-card">
+    <div class="front">
+        <p>front of card<p>
+    </div>
+    <div class="back">
+        <p>back of card</p>
+    </div>
+</div>
 ```
 
-**List card**
+--- 
+
+### Reveal card
+
+```md
+{{A reveal card is slightly more complicated but can have text 
+before ||and|| after the promp}}
+```
+
+**Compiles to**:
+
+```html
+<div class="card reveal-card">
+    <div class="shown">
+        <p>A reveal card is slightly more complicated but can have text before</p>
+    </div>
+    <div class="hidden">
+        <p>and</p>
+    </div>
+    <div class="shown">
+        <p>after the prompt</p>
+    </div>
+</div>
+```
+
+---
+
+### List card
+
 ```md
 {{Some times you wanna have a question that:|||
 
@@ -50,6 +85,20 @@ before ||and|| after of the promp}}
 
 3. ordered items}}
 ```
+
+**Compiles to**:
+
+```html
+<div class="card list-card">
+    <p>Some times you wanna have a question that:</p>
+    <ol>
+        <li><p>can have</p></li>
+        <li><p>several different</p></li>
+        <li><p>ordered items</p></li>
+    </ol>
+</div>
+```
+
 
 ## Info about this library
 
