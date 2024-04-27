@@ -77,7 +77,7 @@ before ||and|| after the promp}}
 ### List card
 
 ```md
-{{Some times you wanna have a question that:|||
+{{Some times you wanna have a question that:|>
 
 1. can have
 
