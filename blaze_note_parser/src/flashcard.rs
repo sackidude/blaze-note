@@ -8,6 +8,15 @@ pub struct FrontBack {
     front: String,
     back: String,
 }
+
+impl FrontBack {
+    pub fn front(&self) -> &str {
+        &self.front
+    }
+    pub fn back(&self) -> &str {
+        &self.back
+    }
+}
 pub struct Reveal {
     wrapper: String,
     reveal: String,
@@ -19,12 +28,13 @@ pub struct List {
 
 // I don't love derive Clone and Copy, but removing it leads to a big fight with
 // the borrow checker that I don't feel like doing right now
-#[derive(Clone, Copy)]
+#[derive(Debug)]
 pub(crate) struct FlashcardBuilder {
     card_type: Option<FlashcardTypes>,
+    indexs: Vec<usize>,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug)]
 pub(crate) enum FlashcardTypes {
     FrontBack,
     Reveal,
@@ -33,11 +43,14 @@ pub(crate) enum FlashcardTypes {
 
 impl FlashcardBuilder {
     pub fn new() -> Self {
-        FlashcardBuilder { card_type: None }
+        FlashcardBuilder {
+            card_type: None,
+            indexs: vec![],
+        }
     }
 
-    pub fn build(self) -> crate::error::Result<Flashcard> {
-        if let Some(card_type) = self.card_type {
+    pub fn build(&mut self) -> crate::error::Result<Flashcard> {
+        if let Some(card_type) = &self.card_type {
             return Ok(match card_type {
                 FlashcardTypes::FrontBack => Flashcard::FrontBack(FrontBack {
                     front: "Hello".into(),
@@ -56,8 +69,12 @@ impl FlashcardBuilder {
         Err(crate::error::Error::EmptyCard)
     }
 
-    pub fn card_type(mut self, card_type: FlashcardTypes) -> Self {
+    pub fn card_type(&mut self, card_type: FlashcardTypes) {
         self.card_type = Some(card_type);
+    }
+
+    pub fn push_index(&mut self, index: usize) -> &mut Self {
+        self.indexs.push(index);
         self
     }
 }
