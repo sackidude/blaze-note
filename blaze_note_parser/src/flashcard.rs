@@ -17,6 +17,9 @@ pub struct List {
     entries: Vec<String>,
 }
 
+// I don't love derive Clone and Copy, but removing it leads to a big fight with
+// the borrow checker that I don't feel like doing right now
+#[derive(Clone, Copy)]
 pub(crate) struct FlashcardBuilder {}
 
 impl FlashcardBuilder {
