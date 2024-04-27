@@ -1,9 +1,11 @@
+#[derive(Debug)]
 pub enum Flashcard {
     FrontBack(FrontBack),
     Reveal(Reveal),
     OrderedList(List),
 }
 
+#[derive(Debug)]
 pub struct FrontBack {
     front: String,
     back: String,
@@ -20,6 +22,7 @@ impl FrontBack {
         &self.back
     }
 }
+#[derive(Debug)]
 pub struct Reveal {
     before: String,
     reveal: String,
@@ -47,6 +50,7 @@ impl Reveal {
         &self.after
     }
 }
+#[derive(Debug)]
 pub struct List {
     question: String,
     entries: Vec<String>,
