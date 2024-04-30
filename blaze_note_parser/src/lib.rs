@@ -12,7 +12,7 @@
 //! fn main() -> Result<(), Box<dyn Error>> {
 //!     let document = String::from("# Hello, _World_!");
 //!     let flashcards = parse_flashcards(&document)?;
-//!     let html = compile_to_html(document)?;
+//!     let html = compile_to_html(&document)?;
 //!     
 //!     Ok(())
 //! }
@@ -25,6 +25,7 @@ pub mod flashcard;
 
 use error::Result;
 use flashcard::{Flashcard, FlashcardTypes};
+use markdown::{CompileOptions, Options};
 
 use crate::flashcard::{FrontBack, List, Reveal};
 
@@ -42,7 +43,6 @@ use crate::flashcard::{FrontBack, List, Reveal};
 ///     let document = String::from("# Hello, _World_!");
 ///     let flashcards = parse_flashcards(&document)?;
 ///
-///     
 ///     Ok(())
 /// }
 /// ```
@@ -162,12 +162,22 @@ pub fn parse_flashcards(document: &str) -> Result<Vec<Flashcard>> {
     Ok(cards)
 }
 
-pub fn compile_to_html(document: String) -> Result<String> {
+pub fn compile_to_html(document: &str) -> Result<String> {
     let compiled_markdown = compile_to_markdown(document)?;
 
-    Ok(markdown::to_html(&compiled_markdown))
+    Ok(markdown::to_html_with_options(
+        &compiled_markdown,
+        &Options {
+            compile: CompileOptions {
+                allow_dangerous_html: true,
+                ..Default::default()
+            },
+            ..Default::default()
+        },
+    )
+    .unwrap())
 }
 
-pub fn compile_to_markdown(document: String) -> Result<String> {
+pub fn compile_to_markdown(document: &str) -> Result<String> {
     Ok("poop".into())
 }
