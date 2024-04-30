@@ -37,14 +37,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 **Compiles to**:
 
 ```html
-<div class="card front-back-card">
-    <div class="front">
-        <p>front of card<p>
-    </div>
-    <div class="back">
-        <p>back of card</p>
-    </div>
-</div>
+<span class="card front-back">
+    <span class="front">
+        front of card
+    </span>
+    <span class="back">
+        back of card
+    </span>
+</span>
 ```
 
 --- 
@@ -59,17 +59,13 @@ before ||and|| after the promp}}
 **Compiles to**:
 
 ```html
-<div class="card reveal-card">
-    <div class="shown">
-        <p>A reveal card is slightly more complicated but can have text before</p>
-    </div>
-    <div class="hidden">
-        <p>and</p>
-    </div>
-    <div class="shown">
-        <p>after the prompt</p>
-    </div>
-</div>
+<span class="card reveal">
+    A reveal card is slightly more complicated but can have text before
+    <span class="hidden">
+        and
+    </span>
+    after the prompt
+</span>
 ```
 
 ---
@@ -89,14 +85,14 @@ before ||and|| after the promp}}
 **Compiles to**:
 
 ```html
-<div class="card list-card">
-    <p>Some times you wanna have a question that:</p>
+<span class="card list">
+    Some times you wanna have a question that:
     <ol>
         <li><p>can have</p></li>
         <li><p>several different</p></li>
         <li><p>ordered items</p></li>
     </ol>
-</div>
+</span>
 ```
 
 
