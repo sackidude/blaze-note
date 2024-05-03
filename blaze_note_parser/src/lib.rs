@@ -179,5 +179,79 @@ pub fn compile_to_html(document: &str) -> Result<String> {
 }
 
 pub fn compile_to_markdown(document: &str) -> Result<String> {
-    Ok("poop".into())
+    if document.len() == 0 {
+        return Ok(String::new());
+    }
+
+    // This algorithm should be of O(n) time complexity and O(n) memory complexity
+    let mut in_card = false;
+    let mut previous = '\0';
+    let mut card_type = FlashcardTypes::FrontBack;
+    let mut buffer: Vec<String> = vec![];
+    let mut compiled = String::new();
+    for current in document.chars() {
+        match (previous, current, in_card) {
+            ('{', '{', false) => {
+                compiled.pop();
+                in_card = true;
+                buffer.push(String::new());
+            }
+            ('}', '}', true) => {
+                let len = buffer.len();
+                buffer[len - 1].pop();
+                in_card = false;
+                compiled.push_str(&create_md_card(&card_type, &buffer)?);
+
+                // Reset for next card
+                buffer = vec![];
+                card_type = FlashcardTypes::FrontBack;
+            }
+            ('|', '|', true) => {
+                card_type = FlashcardTypes::Reveal;
+            }
+            ('|', '>', true) => {
+                card_type = FlashcardTypes::OrderedList;
+            }
+            (_, '|', true) => buffer.push(String::new()),
+            (_, _, false) => {
+                compiled.push(current);
+            }
+            (_, _, true) => {
+                let len = buffer.len();
+                buffer[len - 1].push(current)
+            }
+        }
+        previous = current;
+    }
+
+    Ok(compiled)
+}
+
+fn create_md_card(card_type: &FlashcardTypes, buffer: &Vec<String>) -> Result<String> {
+    Ok(match card_type {
+        FlashcardTypes::FrontBack => {
+            if buffer.len() == 2 {
+                format!("<span class=\"card front-back-card\"><span class=\"front\">{}</span><span class=\"back\">{}</span></span>", buffer[0], buffer[1])
+            } else {
+                Err(crate::error::Error::MalformedBars)?
+            }
+        }
+        FlashcardTypes::Reveal => {
+            if buffer.len() == 3 {
+                format!(
+                    "<span class=\"card reveal-card\">{}<span class=\"hidden\">{}</span>{}</span>",
+                    buffer[0], buffer[1], buffer[2]
+                )
+            } else {
+                Err(crate::error::Error::MalformedBars)?
+            }
+        }
+        FlashcardTypes::OrderedList => {
+            if buffer.len() == 2 {
+                format!("<span class=\"card list-card\"><span class=\"question\">{}</span><span class=\"entries\">{}</span></span>", buffer[0], buffer[1])
+            } else {
+                Err(crate::error::Error::MalformedBars)?
+            }
+        }
+    })
 }
