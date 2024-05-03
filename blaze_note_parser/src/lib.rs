@@ -224,6 +224,10 @@ pub fn compile_to_markdown(document: &str) -> Result<String> {
         previous = current;
     }
 
+    if in_card {
+        Err(crate::error::Error::UnclosedBrackets)?
+    }
+
     Ok(compiled)
 }
 
