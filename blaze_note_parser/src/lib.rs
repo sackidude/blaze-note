@@ -232,16 +232,17 @@ pub fn compile_to_markdown(document: &str) -> Result<String> {
 }
 
 fn create_md_card(card_type: &FlashcardTypes, buffer: &Vec<String>) -> Result<String> {
+    let len = buffer.len();
     Ok(match card_type {
         FlashcardTypes::FrontBack => {
-            if buffer.len() == 2 {
+            if len == 2 {
                 format!("<span class=\"card front-back-card\"><span class=\"front\">{}</span><span class=\"back\">{}</span></span>", buffer[0], buffer[1])
             } else {
                 Err(crate::error::Error::MalformedBars)?
             }
         }
         FlashcardTypes::Reveal => {
-            if buffer.len() == 3 {
+            if len == 3 {
                 format!(
                     "<span class=\"card reveal-card\">{}<span class=\"hidden\">{}</span>{}</span>",
                     buffer[0], buffer[1], buffer[2]
@@ -251,7 +252,7 @@ fn create_md_card(card_type: &FlashcardTypes, buffer: &Vec<String>) -> Result<St
             }
         }
         FlashcardTypes::OrderedList => {
-            if buffer.len() == 2 {
+            if len == 2 {
                 format!("<span class=\"card list-card\"><span class=\"question\">{}</span><span class=\"entries\">{}</span></span>", buffer[0], buffer[1])
             } else {
                 Err(crate::error::Error::MalformedBars)?
